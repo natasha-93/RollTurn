@@ -19,6 +19,7 @@ import {
   Button,
   TextInput,
 } from 'react-native';
+import Die, {DieValue} from './Die';
 
 type Color = 'ORANGE' | 'BLUE' | 'WHITE' | 'BLACK';
 
@@ -27,12 +28,12 @@ type Player = {
   color: Color;
 };
 
-function rollDie(min = 1, max = 6) {
-  return Math.floor(Math.random() * (max - min) + min);
+function rollDie(min: DieValue = 1, max: DieValue = 6): DieValue {
+  return Math.floor(Math.random() * (max - min) + min) as DieValue;
 }
 
 const App = () => {
-  const [dice, setDice] = useState([rollDie()]);
+  const [dice, setDice] = useState<DieValue[]>([rollDie()]);
   const [players, setPlayers] = useState<Player[]>([]);
   const [newPlayerName, setNewPlayerName] = useState('');
   const [turnIndex, setTurnIndex] = useState(0);
@@ -83,9 +84,7 @@ const App = () => {
 
             <View style={styles.diceContainer}>
               {dice.map((die, i) => (
-                <Text key={i} style={styles.die}>
-                  {die}
-                </Text>
+                <Die key={i} value={die} style={styles.die} />
               ))}
             </View>
             <Text style={styles.total}>{total}</Text>
@@ -120,14 +119,6 @@ const styles = StyleSheet.create({
   },
   die: {
     margin: 20,
-    fontSize: 30,
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    height: 50,
-    width: 50,
-    borderStyle: 'solid',
-    borderColor: 'black',
-    borderWidth: 5,
   },
   total: {
     fontWeight: 'bold',

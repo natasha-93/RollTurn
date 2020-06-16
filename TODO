@@ -1,3 +1,4 @@
+✔️ Change the dice to be an svg image
 * Have roll dice button set the turnIndex 
 * Display the player's name when their turn
 * Figure out how to set Color for player
