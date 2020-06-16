@@ -21,12 +21,14 @@ import {
 } from 'react-native';
 import Die, {DieValue} from './Die';
 
-type Color = 'ORANGE' | 'BLUE' | 'WHITE' | 'BLACK';
+type Color = 'ORANGE' | 'YELLOW' | 'WHITE' | 'LIGHTPINK';
 
 type Player = {
   name: string;
   color: Color;
 };
+
+const colors: Color[] = ['ORANGE', 'YELLOW', 'WHITE', 'LIGHTPINK'];
 
 function rollDie(min: DieValue = 1, max: DieValue = 6): DieValue {
   return Math.floor(Math.random() * (max - min) + min) as DieValue;
@@ -44,8 +46,17 @@ const App = () => {
       <SafeAreaView>
         <ScrollView
           contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <View style={styles.appContainer}>
+          style={{
+            ...styles.scrollView,
+            // backgroundColor: 'grey',
+            backgroundColor: `${(
+              players[turnIndex]?.color ?? 'orange'
+            ).toLowerCase()}`,
+          }}>
+          <View
+            style={{
+              ...styles.appContainer,
+            }}>
             <View>
               <TextInput
                 style={{
@@ -53,13 +64,15 @@ const App = () => {
                   width: 150,
                   borderColor: 'gray',
                   borderWidth: 1,
+                  backgroundColor: 'white',
+                  margin: 10,
                 }}
                 value={newPlayerName}
                 onChangeText={(text) => setNewPlayerName(text)}
                 onSubmitEditing={() => {
                   setPlayers([
                     ...players,
-                    {name: newPlayerName, color: 'BLACK'},
+                    {name: newPlayerName, color: colors[players.length]},
                   ]);
                   setNewPlayerName('');
                 }}
@@ -69,6 +82,13 @@ const App = () => {
               title="Roll Dice"
               onPress={() => {
                 setDice((dice) => dice.map(() => rollDie()));
+                setTurnIndex((turnIndex) => {
+                  if (turnIndex < players.length - 1) {
+                    return turnIndex + 1;
+                  } else {
+                    return 0;
+                  }
+                });
               }}
             />
             <View style={styles.buttonContainer}>
@@ -88,9 +108,7 @@ const App = () => {
               ))}
             </View>
             <Text style={styles.total}>{total}</Text>
-            {players.map((player, i) => (
-              <Text key={i}>{player.name}</Text>
-            ))}
+            {players.length > 0 && <Text>{players[turnIndex].name}</Text>}
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -100,7 +118,7 @@ const App = () => {
 
 const styles = StyleSheet.create({
   scrollView: {
-    backgroundColor: 'white',
+    minHeight: '100%',
   },
   appContainer: {
     alignItems: 'center',
