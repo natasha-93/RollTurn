@@ -18,17 +18,41 @@ import {
   StatusBar,
   Button,
   TextInput,
+  Modal,
+  TouchableHighlight,
 } from 'react-native';
 import Die, {DieValue} from './Die';
 
-type Color = 'ORANGE' | 'YELLOW' | 'WHITE' | 'LIGHTPINK';
+type ColorId = 'ORANGE' | 'YELLOW' | 'WHITE' | 'RED';
+
+type Color = {
+  id: ColorId;
+  value: string;
+};
+
+const colors: Color[] = [
+  {
+    id: 'ORANGE',
+    value: '#FFA500',
+  },
+  {
+    id: 'YELLOW',
+    value: '#F3F925',
+  },
+  {
+    id: 'WHITE',
+    value: '#FFFFFF',
+  },
+  {
+    id: 'RED',
+    value: '#F92525',
+  },
+];
 
 type Player = {
   name: string;
   color: Color;
 };
-
-const colors: Color[] = ['ORANGE', 'YELLOW', 'WHITE', 'LIGHTPINK'];
 
 function rollDie(min: DieValue = 1, max: DieValue = 6): DieValue {
   return Math.floor(Math.random() * (max - min) + min) as DieValue;
@@ -37,9 +61,19 @@ function rollDie(min: DieValue = 1, max: DieValue = 6): DieValue {
 const App = () => {
   const [dice, setDice] = useState<DieValue[]>([rollDie()]);
   const [players, setPlayers] = useState<Player[]>([]);
-  const [newPlayerName, setNewPlayerName] = useState('');
+  const [newPlayer, setNewPlayer] = useState<Player>({
+    name: '',
+    color: colors[0],
+  });
   const [turnIndex, setTurnIndex] = useState(0);
+  const [modalVisible, setModalVisible] = useState(true);
   const total = dice.reduce((sum, die) => sum + die, 0);
+
+  function getNextColor() {
+    const colorIndex = players.length % colors.length;
+    return colors[colorIndex];
+  }
+
   return (
     <>
       <StatusBar barStyle="dark-content" />
@@ -48,36 +82,81 @@ const App = () => {
           contentInsetAdjustmentBehavior="automatic"
           style={{
             ...styles.scrollView,
-            // backgroundColor: 'grey',
-            backgroundColor: `${(
-              players[turnIndex]?.color ?? 'orange'
-            ).toLowerCase()}`,
+            backgroundColor: players[turnIndex]?.color.value ?? colors[0].value,
           }}>
           <View
             style={{
               ...styles.appContainer,
             }}>
             <View>
-              <TextInput
-                style={{
-                  height: 40,
-                  width: 150,
-                  borderColor: 'gray',
-                  borderWidth: 1,
-                  backgroundColor: 'white',
-                  margin: 10,
-                }}
-                value={newPlayerName}
-                onChangeText={(text) => setNewPlayerName(text)}
-                onSubmitEditing={() => {
-                  setPlayers([
-                    ...players,
-                    {name: newPlayerName, color: colors[players.length]},
-                  ]);
-                  setNewPlayerName('');
-                }}
-              />
+              <View style={styles.newPlayerInputs}>
+                <TextInput
+                  style={{
+                    height: 40,
+                    width: 150,
+                    borderColor: 'gray',
+                    borderWidth: 1,
+                    backgroundColor: 'white',
+                  }}
+                  value={newPlayer.name}
+                  onChangeText={(name) => setNewPlayer({...newPlayer, name})}
+                  onSubmitEditing={() => {
+                    setPlayers([...players, newPlayer]);
+                    setNewPlayer({name: '', color: getNextColor()});
+                  }}
+                />
+                <Modal
+                  animationType="slide"
+                  transparent={true}
+                  visible={modalVisible}>
+                  <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+                      {colors.map((color) => (
+                        <TouchableHighlight
+                          key={color.id}
+                          onPress={() => {
+                            setNewPlayer((newPlayer) => ({
+                              ...newPlayer,
+                              color,
+                            }));
+                            setModalVisible(!modalVisible);
+                          }}
+                          style={{
+                            ...styles.openButton,
+                            backgroundColor: color.value,
+                          }}>
+                          <Text />
+                        </TouchableHighlight>
+                      ))}
+
+                      {/* <Text style={styles.modalText}>Many colors...</Text> */}
+                      {/* <TouchableHighlight
+                        style={{
+                          ...styles.openButton,
+                          backgroundColor: '#2196F3',
+                        }}
+                        onPress={() => {
+                          setModalVisible(!modalVisible);
+                        }}>
+                        <Text style={styles.textStyle}>Hide Modal</Text>
+                      </TouchableHighlight> */}
+                    </View>
+                  </View>
+                </Modal>
+
+                <TouchableHighlight
+                  style={{
+                    ...styles.openButton,
+                    backgroundColor: newPlayer.color.value,
+                  }}
+                  onPress={() => {
+                    setModalVisible(true);
+                  }}>
+                  <Text style={styles.textStyle}></Text>
+                </TouchableHighlight>
+              </View>
             </View>
+
             <Button
               title="Roll Dice"
               onPress={() => {
@@ -123,12 +202,17 @@ const styles = StyleSheet.create({
   appContainer: {
     alignItems: 'center',
   },
+  newPlayerInputs: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    margin: 20,
+  },
   buttonContainer: {
     flexDirection: 'row',
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    margin: 30,
+    margin: 10,
   },
   diceContainer: {
     flexDirection: 'row',
@@ -142,6 +226,44 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 30,
     marginTop: 20,
+  },
+  centeredView: {
+    flex: 1,
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    marginTop: 50,
+    flexDirection: 'row',
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  openButton: {
+    borderRadius: 80,
+    width: 40,
+    height: 40,
+    borderWidth: 3,
+    borderColor: 'black',
+    elevation: 2,
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
   },
 });
 

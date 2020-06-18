@@ -3,5 +3,6 @@
 ✔️ Display the player's name when their turn
 ✔️ Figure out how to set Color for player
 ✔️ Set background to be player color when their turn
-* Make separate page for game setup (enter player details)
+✔️ Allow player to choose their color
+* Make separate page for game setup (enter player details) - also to edit/remove players
 * Look into styled-components
