@@ -4,5 +4,8 @@
 ✔️ Figure out how to set Color for player
 ✔️ Set background to be player color when their turn
 ✔️ Allow player to choose their color
+✔️ Add delete and edit functionality for players
 * Make separate page for game setup (enter player details) - also to edit/remove players
 * Look into styled-components
+* Click out of modal closes it
+* Move player settings to sidebar / new screen

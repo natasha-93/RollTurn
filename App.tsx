@@ -22,15 +22,15 @@ import {
   TouchableHighlight,
 } from 'react-native';
 import Die, {DieValue} from './Die';
+import ColorPicker from './ColorPicker';
+import {Color, ColorId} from './models/color';
 
-type ColorId = 'ORANGE' | 'YELLOW' | 'WHITE' | 'RED';
-
-type Color = {
-  id: ColorId;
-  value: string;
+type Player = {
+  name: string;
+  color: Color;
 };
 
-const colors: Color[] = [
+export const colors: Color[] = [
   {
     id: 'ORANGE',
     value: '#FFA500',
@@ -49,11 +49,6 @@ const colors: Color[] = [
   },
 ];
 
-type Player = {
-  name: string;
-  color: Color;
-};
-
 function rollDie(min: DieValue = 1, max: DieValue = 6): DieValue {
   return Math.floor(Math.random() * (max - min) + min) as DieValue;
 }
@@ -66,12 +61,21 @@ const App = () => {
     color: colors[0],
   });
   const [turnIndex, setTurnIndex] = useState(0);
-  const [modalVisible, setModalVisible] = useState(true);
+  const [settingsModalVisible, setSettingsModalVisible] = useState(true);
   const total = dice.reduce((sum, die) => sum + die, 0);
 
-  function getNextColor() {
+  function getNextColor(players: Player[]) {
     const colorIndex = players.length % colors.length;
     return colors[colorIndex];
+  }
+
+  function addPlayer() {
+    const newPlayers = [...players, newPlayer];
+    setPlayers(newPlayers);
+    setNewPlayer({
+      name: '',
+      color: getNextColor(newPlayers),
+    });
   }
 
   return (
@@ -89,72 +93,99 @@ const App = () => {
               ...styles.appContainer,
             }}>
             <View>
-              <View style={styles.newPlayerInputs}>
-                <TextInput
-                  style={{
-                    height: 40,
-                    width: 150,
-                    borderColor: 'gray',
-                    borderWidth: 1,
-                    backgroundColor: 'white',
-                  }}
-                  value={newPlayer.name}
-                  onChangeText={(name) => setNewPlayer({...newPlayer, name})}
-                  onSubmitEditing={() => {
-                    setPlayers([...players, newPlayer]);
-                    setNewPlayer({name: '', color: getNextColor()});
-                  }}
-                />
-                <Modal
-                  animationType="slide"
-                  transparent={true}
-                  visible={modalVisible}>
-                  <View style={styles.centeredView}>
-                    <View style={styles.modalView}>
-                      {colors.map((color) => (
-                        <TouchableHighlight
-                          key={color.id}
-                          onPress={() => {
-                            setNewPlayer((newPlayer) => ({
-                              ...newPlayer,
-                              color,
-                            }));
-                            setModalVisible(!modalVisible);
-                          }}
-                          style={{
-                            ...styles.openButton,
-                            backgroundColor: color.value,
-                          }}>
-                          <Text />
-                        </TouchableHighlight>
-                      ))}
-
-                      {/* <Text style={styles.modalText}>Many colors...</Text> */}
-                      {/* <TouchableHighlight
-                        style={{
-                          ...styles.openButton,
-                          backgroundColor: '#2196F3',
+              {/* Players Settings */}
+              <Modal
+                animationType="fade"
+                transparent={true}
+                visible={settingsModalVisible}>
+                <View>
+                  <View style={styles.modalView}>
+                    <TouchableHighlight
+                      onPress={() => setSettingsModalVisible(false)}>
+                      <Text>Close</Text>
+                    </TouchableHighlight>
+                    <View style={styles.playerInputs}>
+                      <TextInput
+                        style={styles.input}
+                        value={newPlayer.name}
+                        onChangeText={(name) =>
+                          setNewPlayer({...newPlayer, name})
+                        }
+                        onSubmitEditing={() => {
+                          addPlayer();
                         }}
-                        onPress={() => {
-                          setModalVisible(!modalVisible);
-                        }}>
-                        <Text style={styles.textStyle}>Hide Modal</Text>
-                      </TouchableHighlight> */}
+                      />
+                      <ColorPicker
+                        selected={newPlayer.color}
+                        onChange={(color) => {
+                          setNewPlayer((newPlayer) => ({
+                            ...newPlayer,
+                            color,
+                          }));
+                        }}
+                        options={colors}
+                      />
+                    </View>
+
+                    <View>
+                      {players.map((player, i) => (
+                        <View key={i} style={styles.playerInputs}>
+                          <Text
+                            onPress={() => {
+                              setPlayers((players) =>
+                                players.filter((player, index) => index !== i),
+                              );
+                            }}>
+                            X
+                          </Text>
+                          <TextInput
+                            style={styles.input}
+                            value={player.name}
+                            onChangeText={(name) =>
+                              setPlayers((players) =>
+                                players.map((player, index) => {
+                                  if (index !== i) return player;
+
+                                  return {
+                                    ...player,
+                                    name,
+                                  };
+                                }),
+                              )
+                            }
+                            onSubmitEditing={() => {
+                              addPlayer();
+                            }}
+                          />
+                          <ColorPicker
+                            selected={player.color}
+                            onChange={(color) => {
+                              setPlayers((players) =>
+                                players.map((player, index) => {
+                                  if (index !== i) return player;
+
+                                  return {
+                                    ...player,
+                                    color,
+                                  };
+                                }),
+                              );
+                            }}
+                            options={colors}
+                          />
+                        </View>
+                      ))}
                     </View>
                   </View>
-                </Modal>
+                </View>
+              </Modal>
 
-                <TouchableHighlight
-                  style={{
-                    ...styles.openButton,
-                    backgroundColor: newPlayer.color.value,
-                  }}
-                  onPress={() => {
-                    setModalVisible(true);
-                  }}>
-                  <Text style={styles.textStyle}></Text>
-                </TouchableHighlight>
-              </View>
+              <TouchableHighlight
+                onPress={() => {
+                  setSettingsModalVisible(true);
+                }}>
+                <Text>Edit Players</Text>
+              </TouchableHighlight>
             </View>
 
             <Button
@@ -202,10 +233,20 @@ const styles = StyleSheet.create({
   appContainer: {
     alignItems: 'center',
   },
-  newPlayerInputs: {
+  playerInputs: {
     flexDirection: 'row',
     alignItems: 'center',
     margin: 20,
+  },
+  input: {
+    fontSize: 20,
+    height: 40,
+    width: 150,
+    borderColor: 'black',
+    borderWidth: 1,
+    backgroundColor: 'white',
+    padding: 5,
+    marginRight: 5,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -227,14 +268,10 @@ const styles = StyleSheet.create({
     fontSize: 30,
     marginTop: 20,
   },
-  centeredView: {
-    flex: 1,
-    alignItems: 'center',
-    marginTop: 22,
-  },
+
   modalView: {
     marginTop: 50,
-    flexDirection: 'row',
+    // flexDirection: 'row',
     backgroundColor: 'white',
     borderRadius: 20,
     padding: 35,
@@ -248,23 +285,14 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-  openButton: {
-    borderRadius: 80,
-    width: 40,
-    height: 40,
-    borderWidth: 3,
-    borderColor: 'black',
-    elevation: 2,
-  },
-  textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
-  },
+  // openButton: {
+  //   borderRadius: 80,
+  //   width: 40,
+  //   height: 40,
+  //   borderWidth: 3,
+  //   borderColor: 'black',
+  //   elevation: 2,
+  // },
 });
 
 export default App;
