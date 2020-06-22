@@ -34,7 +34,7 @@ const NumberDieMap = {
   6: Six,
 };
 
-export default function Die({value, style, size = 50}: DieProps) {
+export default function Die({value, style, size = 100}: DieProps) {
   const Component = NumberDieMap[value];
   return <Component width={size} height={size} style={style} />;
 }
