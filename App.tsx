@@ -13,25 +13,6 @@ export type Player = {
   color: Color;
 };
 
-export const colors: Color[] = [
-  {
-    id: 'ORANGE',
-    value: '#FFA500',
-  },
-  {
-    id: 'YELLOW',
-    value: '#F3F925',
-  },
-  {
-    id: 'WHITE',
-    value: '#FFFFFF',
-  },
-  {
-    id: 'RED',
-    value: '#F92525',
-  },
-];
-
 const Tab = createBottomTabNavigator();
 
 export default function App() {

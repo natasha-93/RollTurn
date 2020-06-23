@@ -9,9 +9,12 @@ import {
   SafeAreaView,
 } from 'react-native';
 import ColorPicker from './ColorPicker';
-import {colors, Player} from './App';
+import {Player} from './App';
+import {colors} from './models/color';
 import {PlayerContext} from './context/player';
 import {ScrollView} from 'react-native-gesture-handler';
+import LinearGradient from 'react-native-linear-gradient';
+import {Icon} from 'react-native-elements';
 
 export default function Sidebar() {
   const {players, setPlayers} = useContext(PlayerContext);
@@ -42,13 +45,11 @@ export default function Sidebar() {
           contentInsetAdjustmentBehavior="automatic"
           style={{
             ...styles.scrollView,
-            backgroundColor: 'lightgrey',
           }}>
-          <View
-            style={{
-              ...styles.appContainer,
-            }}>
-            <View>
+          <LinearGradient
+            colors={['#a8edea', 'white']}
+            style={styles.linearGradient}>
+            <View style={styles.appContainer}>
               <View style={styles.inputsContainer}>
                 <View style={styles.playerInputs}>
                   <TextInput
@@ -75,15 +76,14 @@ export default function Sidebar() {
                 <View>
                   {players.map((player, i) => (
                     <View key={i} style={styles.playerInputs}>
-                      <Text
-                        style={styles.deleteButton}
+                      <TouchableOpacity
                         onPress={() => {
                           setPlayers((players) =>
                             players.filter((player, index) => index !== i),
                           );
                         }}>
-                        x
-                      </Text>
+                        <Icon name="delete" type="ionicons" size={30} />
+                      </TouchableOpacity>
 
                       <TextInput
                         style={styles.input}
@@ -125,7 +125,7 @@ export default function Sidebar() {
                 </View>
               </View>
             </View>
-          </View>
+          </LinearGradient>
         </ScrollView>
       </SafeAreaView>
     </View>
@@ -137,10 +137,19 @@ const styles = StyleSheet.create({
     minHeight: '100%',
   },
   appContainer: {
+    flex: 1,
     alignItems: 'center',
+    minHeight: '100%',
+    minWidth: '100%',
+  },
+  linearGradient: {
+    flex: 1,
+    minWidth: '100%',
+    minHeight: '100%',
   },
   inputsContainer: {
     justifyContent: 'center',
+    minWidth: 270,
   },
   playerInputs: {
     flexDirection: 'row',
