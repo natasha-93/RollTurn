@@ -1,4 +1,11 @@
-export type ColorId = 'ORANGE' | 'YELLOW' | 'BLUE' | 'RED' | 'GREEN';
+export type ColorId =
+  | 'ORANGE'
+  | 'YELLOW'
+  | 'BLUE'
+  | 'RED'
+  | 'GREEN'
+  | 'BLACK'
+  | 'WHITE';
 
 export type Color = {
   id: ColorId;
@@ -25,5 +32,13 @@ export const colors: Color[] = [
   {
     id: 'GREEN',
     value: '#1ba303',
+  },
+  {
+    id: 'BLACK',
+    value: '#666',
+  },
+  {
+    id: 'WHITE',
+    value: '#eee',
   },
 ];

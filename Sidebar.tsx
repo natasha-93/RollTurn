@@ -130,13 +130,9 @@ const styles = StyleSheet.create({
   appContainer: {
     flex: 1,
     alignItems: 'center',
-    // minHeight: '100%',
-    // minWidth: '100%',
   },
   linearGradient: {
     flex: 1,
-    // minWidth: '100%',
-    // minHeight: '100%',
   },
   inputsContainer: {
     justifyContent: 'center',
@@ -152,9 +148,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     height: 40,
     width: 150,
-    borderColor: 'black',
-    borderWidth: 1,
-    backgroundColor: 'white',
+    borderBottomColor: 'grey',
+    borderBottomWidth: 1,
+    // borderColor: 'black',
+    // borderWidth: 1,
+    // backgroundColor: 'white',
     padding: 5,
     marginRight: 5,
     marginLeft: 5,
