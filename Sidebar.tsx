@@ -1,11 +1,9 @@
 import React, {useState, useContext} from 'react';
 import {
-  Text,
   View,
   TouchableOpacity,
   StyleSheet,
   TextInput,
-  StatusBar,
   SafeAreaView,
 } from 'react-native';
 import ColorPicker from './ColorPicker';
@@ -38,114 +36,107 @@ export default function Sidebar() {
   }
 
   return (
-    <View>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
+    <SafeAreaView style={{flex: 1}}>
+      <LinearGradient
+        colors={['#a8edea', 'white']}
+        style={styles.linearGradient}>
         <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={{
-            ...styles.scrollView,
-          }}>
-          <LinearGradient
-            colors={['#a8edea', 'white']}
-            style={styles.linearGradient}>
-            <View style={styles.appContainer}>
-              <View style={styles.inputsContainer}>
-                <View style={styles.playerInputs}>
-                  <TextInput
-                    placeholder="Add player..."
-                    style={styles.input}
-                    value={newPlayer.name}
-                    onChangeText={(name) => setNewPlayer({...newPlayer, name})}
-                    onSubmitEditing={() => {
-                      addPlayer();
-                    }}
-                  />
-                  <ColorPicker
-                    selected={newPlayer.color}
-                    onChange={(color) => {
-                      setNewPlayer((newPlayer) => ({
-                        ...newPlayer,
-                        color,
-                      }));
-                    }}
-                    options={colors}
-                  />
-                </View>
+          style={{flex: 1}}
+          contentInsetAdjustmentBehavior="automatic">
+          <View style={styles.appContainer}>
+            <View style={styles.inputsContainer}>
+              <View style={styles.playerInputs}>
+                <TextInput
+                  placeholder="Add player..."
+                  style={styles.input}
+                  value={newPlayer.name}
+                  onChangeText={(name) => setNewPlayer({...newPlayer, name})}
+                  onSubmitEditing={() => {
+                    addPlayer();
+                  }}
+                />
+                <ColorPicker
+                  selected={newPlayer.color}
+                  onChange={(color) => {
+                    setNewPlayer((newPlayer) => ({
+                      ...newPlayer,
+                      color,
+                    }));
+                  }}
+                  options={colors}
+                />
+              </View>
 
-                <View>
-                  {players.map((player, i) => (
-                    <View key={i} style={styles.playerInputs}>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setPlayers((players) =>
-                            players.filter((player, index) => index !== i),
-                          );
-                        }}>
-                        <Icon name="delete" type="ionicons" size={30} />
-                      </TouchableOpacity>
+              <View>
+                {players.map((player, i) => (
+                  <View key={i} style={styles.playerInputs}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setPlayers((players) =>
+                          players.filter((player, index) => index !== i),
+                        );
+                      }}>
+                      <Icon name="delete" type="ionicons" size={30} />
+                    </TouchableOpacity>
 
-                      <TextInput
-                        style={styles.input}
-                        value={player.name}
-                        onChangeText={(name) =>
-                          setPlayers((players) =>
-                            players.map((player, index) => {
-                              if (index !== i) return player;
+                    <TextInput
+                      style={styles.input}
+                      value={player.name}
+                      onChangeText={(name) =>
+                        setPlayers((players) =>
+                          players.map((player, index) => {
+                            if (index !== i) return player;
 
-                              return {
-                                ...player,
-                                name,
-                              };
-                            }),
-                          )
-                        }
-                        onSubmitEditing={() => {
-                          addPlayer();
-                        }}
-                      />
-                      <ColorPicker
-                        selected={player.color}
-                        onChange={(color) => {
-                          setPlayers((players) =>
-                            players.map((player, index) => {
-                              if (index !== i) return player;
+                            return {
+                              ...player,
+                              name,
+                            };
+                          }),
+                        )
+                      }
+                      onSubmitEditing={() => {
+                        addPlayer();
+                      }}
+                    />
+                    <ColorPicker
+                      selected={player.color}
+                      onChange={(color) => {
+                        setPlayers((players) =>
+                          players.map((player, index) => {
+                            if (index !== i) return player;
 
-                              return {
-                                ...player,
-                                color,
-                              };
-                            }),
-                          );
-                        }}
-                        options={colors}
-                      />
-                    </View>
-                  ))}
-                </View>
+                            return {
+                              ...player,
+                              color,
+                            };
+                          }),
+                        );
+                      }}
+                      options={colors}
+                    />
+                  </View>
+                ))}
               </View>
             </View>
-          </LinearGradient>
+          </View>
         </ScrollView>
-      </SafeAreaView>
-    </View>
+      </LinearGradient>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
-    minHeight: '100%',
-  },
+  scrollView: {},
   appContainer: {
     flex: 1,
     alignItems: 'center',
-    minHeight: '100%',
-    minWidth: '100%',
+    // minHeight: '100%',
+    // minWidth: '100%',
   },
   linearGradient: {
     flex: 1,
-    minWidth: '100%',
-    minHeight: '100%',
+    // minWidth: '100%',
+    // minHeight: '100%',
   },
   inputsContainer: {
     justifyContent: 'center',
@@ -167,13 +158,6 @@ const styles = StyleSheet.create({
     padding: 5,
     marginRight: 5,
     marginLeft: 5,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: 10,
   },
   deleteButton: {
     fontSize: 30,
