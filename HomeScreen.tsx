@@ -12,6 +12,10 @@ import Die, {DieValue} from './Die';
 import {colors} from './models/color';
 import {PlayerContext} from './context/player';
 import LinearGradient from 'react-native-linear-gradient';
+import {
+  TouchableWithoutFeedback,
+  TouchableHighlight,
+} from 'react-native-gesture-handler';
 
 function rollDie(min: DieValue = 1, max: DieValue = 6): DieValue {
   return Math.floor(Math.random() * (max - min) + min) as DieValue;
@@ -31,71 +35,76 @@ export default function HomeScreen() {
       <LinearGradient
         colors={[players[turnIndex]?.color.value ?? '#a8edea', 'white']}
         style={styles.linearGradient}>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          contentContainerStyle={{minHeight: '100%'}}
-          style={{flex: 1}}>
-          <TouchableOpacity
-            style={styles.rollBtn}
-            onPress={() => {
-              setDice((dice) => dice.map(() => rollDie()));
-              setTurnIndex((turnIndex) => {
-                if (turnIndex < players.length - 1) {
-                  return turnIndex + 1;
-                } else {
-                  return 0;
-                }
-              });
-            }}>
-            <Text style={styles.btnText}>Roll Dice</Text>
-          </TouchableOpacity>
+        <TouchableOpacity
+          style={{flex: 1, minWidth: '100%'}}
+          onPress={() => {
+            setDice((dice) => dice.map(() => rollDie()));
+            setTurnIndex((turnIndex) => {
+              if (turnIndex < players.length - 1) {
+                return turnIndex + 1;
+              } else {
+                return 0;
+              }
+            });
+          }}>
+          <ScrollView
+            contentInsetAdjustmentBehavior="automatic"
+            contentContainerStyle={{minHeight: '100%'}}
+            style={{flex: 1}}>
+            <View style={styles.rollBtn}>
+              <Text style={styles.btnText}>Roll Dice</Text>
+            </View>
 
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={{
-                ...styles.dieNumberBtn,
-                opacity: dice.length > 5 ? 0.3 : 1,
-              }}
-              disabled={dice.length > 5}
-              onPress={() => setDice((dice) => [...dice, rollDie()])}>
-              <Text style={styles.btnText}>+</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                ...styles.dieNumberBtn,
-                opacity: dice.length <= 1 ? 0.3 : 1,
-              }}
-              disabled={dice.length <= 1}
-              onPress={() => setDice((dice) => dice.slice(0, -1))}>
-              <Text style={styles.btnText}>-</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.diceContainer}>
-            {dice.map((die, i) => (
-              <Die
-                key={i}
-                value={die}
-                style={styles.die}
-                size={100 - dice.length * 7}
-              />
-            ))}
-          </View>
-          <View style={styles.detailsContainer}>
-            <Text style={styles.total}>{total}</Text>
-            {players.length > 0 && (
-              <>
-                <Text style={styles.playerTurn}>{players[turnIndex].name}</Text>
-                <TouchableOpacity
-                  style={styles.rollBtn}
-                  onPress={() => {
-                    setDice((dice) => dice.map(() => rollDie()));
-                  }}>
-                  <Icon name="refresh" type="ionicons" size={30} />
-                </TouchableOpacity>
-              </>
-            )}
-          </View>
-        </ScrollView>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={{
+                  ...styles.dieNumberBtn,
+                  opacity: dice.length > 5 ? 0.3 : 1,
+                }}
+                disabled={dice.length > 5}
+                onPress={() => setDice((dice) => [...dice, rollDie()])}>
+                <Text style={styles.btnText}>+</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  ...styles.dieNumberBtn,
+                  opacity: dice.length <= 1 ? 0.3 : 1,
+                }}
+                disabled={dice.length <= 1}
+                onPress={() => setDice((dice) => dice.slice(0, -1))}>
+                <Text style={styles.btnText}>-</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.diceContainer}>
+              {dice.map((die, i) => (
+                <Die
+                  key={i}
+                  value={die}
+                  style={styles.die}
+                  size={100 - dice.length * 7}
+                />
+              ))}
+            </View>
+            <View style={styles.detailsContainer}>
+              <Text style={styles.total}>{total}</Text>
+              {players.length > 0 && (
+                <>
+                  <Text style={styles.playerTurn}>
+                    {players[turnIndex].name}
+                  </Text>
+
+                  <TouchableOpacity
+                    onPress={() => {
+                      setDice((dice) => dice.map(() => rollDie()));
+                    }}>
+                    <Icon name="refresh" type="ionicons" size={30} />
+                  </TouchableOpacity>
+                </>
+              )}
+            </View>
+          </ScrollView>
+        </TouchableOpacity>
       </LinearGradient>
     </SafeAreaView>
   );
@@ -127,6 +136,8 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
+    marginLeft: 'auto',
+    marginRight: 'auto',
     maxWidth: 330,
   },
   die: {
