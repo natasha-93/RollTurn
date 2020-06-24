@@ -2,6 +2,7 @@ import 'react-native-gesture-handler';
 
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {Icon} from 'react-native-elements';
 
 import React from 'react';
 import {Color} from './models/color';
@@ -21,8 +22,31 @@ export default function App() {
     <NavigationContainer>
       <PlayerProvider>
         <Tab.Navigator>
-          <Tab.Screen name="Home" component={HomeScreen} />
-          <Tab.Screen name="Settings" component={Sidebar} />
+          <Tab.Screen
+            name="Home"
+            component={HomeScreen}
+            options={{
+              tabBarLabel: 'Home',
+              tabBarIcon: ({color, size}) => (
+                <Icon name="home" type="ionicons" color={color} size={size} />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Settings"
+            component={Sidebar}
+            options={{
+              tabBarLabel: 'Settings',
+              tabBarIcon: ({color, size}) => (
+                <Icon
+                  name="settings"
+                  type="ionicons"
+                  color={color}
+                  size={size}
+                />
+              ),
+            }}
+          />
         </Tab.Navigator>
       </PlayerProvider>
     </NavigationContainer>
