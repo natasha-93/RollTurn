@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {
   View,
   TouchableOpacity,
@@ -6,6 +6,7 @@ import {
   TextInput,
   SafeAreaView,
 } from 'react-native';
+
 import ColorPicker from './ColorPicker';
 import {Player} from './App';
 import {colors} from './models/color';
@@ -15,7 +16,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import {Icon} from 'react-native-elements';
 
 export default function Sidebar() {
-  const {players, setPlayers} = useContext(PlayerContext);
+  const {players, setPlayers, storePlayers} = useContext(PlayerContext);
+
   const [newPlayer, setNewPlayer] = useState<Player>({
     name: '',
     color: colors[0],
@@ -34,6 +36,10 @@ export default function Sidebar() {
       color: getNextColor(newPlayers),
     });
   }
+
+  useEffect(() => {
+    storePlayers(players);
+  }, [players]);
 
   return (
     <SafeAreaView style={{flex: 1}}>
