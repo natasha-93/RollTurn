@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {
   Text,
   View,
@@ -6,16 +6,21 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
+  NativeEventEmitter,
+  NativeModules,
 } from 'react-native';
+import Tts from 'react-native-tts';
 import {Icon} from 'react-native-elements';
 import Die, {DieValue} from './Die';
 import {colors} from './models/color';
 import {PlayerContext} from './context/player';
 import LinearGradient from 'react-native-linear-gradient';
-import {
-  TouchableWithoutFeedback,
-  TouchableHighlight,
-} from 'react-native-gesture-handler';
+
+// Install dummy handlers so we don't see the tts warnings
+const ee = new NativeEventEmitter(NativeModules.TextToSpeech);
+ee.addListener('tts-start', () => {});
+ee.addListener('tts-finish', () => {});
+ee.addListener('tts-cancel', () => {});
 
 function rollDie(min: DieValue = 1, max: DieValue = 6): DieValue {
   return Math.floor(Math.random() * (max - min) + min) as DieValue;
@@ -29,6 +34,10 @@ export default function HomeScreen() {
   const total = dice.reduce((sum, die) => sum + die, 0);
 
   players[turnIndex]?.color.value ?? colors[0].value;
+
+  useEffect(() => {
+    Tts.speak(total.toString());
+  }, [dice]);
 
   return (
     <SafeAreaView style={{flex: 1}}>

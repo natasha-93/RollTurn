@@ -6,3 +6,8 @@ declare module '*.svg' {
   }>;
   export default content;
 }
+
+declare module 'react-native-tts' {
+  const content: any;
+  export default content;
+}

@@ -80,6 +80,8 @@ target 'RollTurn' do
 
   pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
 
+  pod 'TextToSpeech', :path => '../node_modules/react-native-tts'
+
   target 'RollTurnTests' do
     inherit! :complete
     # Pods for testing

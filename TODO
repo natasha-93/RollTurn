@@ -12,5 +12,4 @@
 ✔️ Fix styling on tab navigation
 ✔️ Click on dice / player name should roll dice
 ✔️ Add localstorage
-
-* Maybe add sound for rolled values
+✔️ Add sound for rolled values
