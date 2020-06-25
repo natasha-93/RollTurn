@@ -15,6 +15,7 @@ import Die, {DieValue} from './Die';
 import {colors} from './models/color';
 import {PlayerContext} from './context/player';
 import LinearGradient from 'react-native-linear-gradient';
+import {SettingsContext} from './context/settings';
 
 // Install dummy handlers so we don't see the tts warnings
 const ee = new NativeEventEmitter(NativeModules.TextToSpeech);
@@ -30,13 +31,16 @@ export default function HomeScreen() {
   const [dice, setDice] = useState<DieValue[]>([rollDie()]);
   const [turnIndex, setTurnIndex] = useState(0);
   const {players} = useContext(PlayerContext);
+  const {settings} = useContext(SettingsContext);
 
   const total = dice.reduce((sum, die) => sum + die, 0);
 
   players[turnIndex]?.color.value ?? colors[0].value;
 
   useEffect(() => {
-    Tts.speak(total.toString());
+    if (settings.soundEnabled) {
+      Tts.speak(total.toString());
+    }
   }, [dice]);
 
   return (
@@ -104,6 +108,7 @@ export default function HomeScreen() {
                   </Text>
 
                   <TouchableOpacity
+                    style={{padding: 30}}
                     onPress={() => {
                       setDice((dice) => dice.map(() => rollDie()));
                     }}>
@@ -129,11 +134,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   rollBtn: {
-    padding: 20,
+    padding: 10,
     alignItems: 'center',
   },
   dieNumberBtn: {
-    padding: 10,
+    padding: 30,
     marginLeft: 25,
     marginRight: 25,
   },

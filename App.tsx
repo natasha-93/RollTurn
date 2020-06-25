@@ -9,6 +9,7 @@ import {Color} from './models/color';
 import HomeScreen from './HomeScreen';
 import Sidebar from './Sidebar';
 import {PlayerProvider} from './context/player';
+import {SettingsProvider} from './context/settings';
 
 export type Player = {
   name: string;
@@ -21,33 +22,35 @@ export default function App() {
   return (
     <NavigationContainer>
       <PlayerProvider>
-        <Tab.Navigator>
-          <Tab.Screen
-            name="Home"
-            component={HomeScreen}
-            options={{
-              tabBarLabel: 'Home',
-              tabBarIcon: ({color, size}) => (
-                <Icon name="home" type="ionicons" color={color} size={size} />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="Settings"
-            component={Sidebar}
-            options={{
-              tabBarLabel: 'Settings',
-              tabBarIcon: ({color, size}) => (
-                <Icon
-                  name="settings"
-                  type="ionicons"
-                  color={color}
-                  size={size}
-                />
-              ),
-            }}
-          />
-        </Tab.Navigator>
+        <SettingsProvider>
+          <Tab.Navigator>
+            <Tab.Screen
+              name="Home"
+              component={HomeScreen}
+              options={{
+                tabBarLabel: 'Home',
+                tabBarIcon: ({color, size}) => (
+                  <Icon name="home" type="ionicons" color={color} size={size} />
+                ),
+              }}
+            />
+            <Tab.Screen
+              name="Settings"
+              component={Sidebar}
+              options={{
+                tabBarLabel: 'Settings',
+                tabBarIcon: ({color, size}) => (
+                  <Icon
+                    name="settings"
+                    type="ionicons"
+                    color={color}
+                    size={size}
+                  />
+                ),
+              }}
+            />
+          </Tab.Navigator>
+        </SettingsProvider>
       </PlayerProvider>
     </NavigationContainer>
   );

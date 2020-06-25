@@ -5,18 +5,27 @@ import {
   StyleSheet,
   TextInput,
   SafeAreaView,
+  Text,
 } from 'react-native';
 
 import ColorPicker from './ColorPicker';
 import {Player} from './App';
 import {colors} from './models/color';
 import {PlayerContext} from './context/player';
-import {ScrollView} from 'react-native-gesture-handler';
+import {SettingsContext} from './context/settings';
+import {ScrollView, Switch} from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import {Icon} from 'react-native-elements';
 
 export default function Sidebar() {
   const {players, setPlayers, storePlayers} = useContext(PlayerContext);
+  const {settings, setSettings, storeSettings} = useContext(SettingsContext);
+
+  const toggleSwitch = () =>
+    setSettings((settings) => ({
+      ...settings,
+      soundEnabled: !settings.soundEnabled,
+    }));
 
   const [newPlayer, setNewPlayer] = useState<Player>({
     name: '',
@@ -41,6 +50,10 @@ export default function Sidebar() {
     storePlayers(players);
   }, [players]);
 
+  useEffect(() => {
+    storeSettings(settings);
+  }, [settings]);
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <LinearGradient
@@ -49,81 +62,86 @@ export default function Sidebar() {
         <ScrollView
           style={{flex: 1}}
           contentInsetAdjustmentBehavior="automatic">
-          <View style={styles.appContainer}>
-            <View style={styles.inputsContainer}>
-              <View style={styles.playerInputs}>
+          <View style={styles.playerInputs}>
+            <TextInput
+              placeholder="Add player..."
+              style={styles.input}
+              value={newPlayer.name}
+              onChangeText={(name) => setNewPlayer({...newPlayer, name})}
+              onSubmitEditing={() => {
+                addPlayer();
+              }}
+            />
+            <ColorPicker
+              selected={newPlayer.color}
+              onChange={(color) => {
+                setNewPlayer((newPlayer) => ({
+                  ...newPlayer,
+                  color,
+                }));
+              }}
+              options={colors}
+            />
+          </View>
+          <View>
+            {players.map((player, i) => (
+              <View key={i} style={styles.playerInputs}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setPlayers((players) =>
+                      players.filter((player, index) => index !== i),
+                    );
+                  }}>
+                  <Icon name="delete" type="ionicons" size={30} />
+                </TouchableOpacity>
+
                 <TextInput
-                  placeholder="Add player..."
                   style={styles.input}
-                  value={newPlayer.name}
-                  onChangeText={(name) => setNewPlayer({...newPlayer, name})}
+                  value={player.name}
+                  onChangeText={(name) =>
+                    setPlayers((players) =>
+                      players.map((player, index) => {
+                        if (index !== i) return player;
+
+                        return {
+                          ...player,
+                          name,
+                        };
+                      }),
+                    )
+                  }
                   onSubmitEditing={() => {
                     addPlayer();
                   }}
                 />
                 <ColorPicker
-                  selected={newPlayer.color}
+                  selected={player.color}
                   onChange={(color) => {
-                    setNewPlayer((newPlayer) => ({
-                      ...newPlayer,
-                      color,
-                    }));
+                    setPlayers((players) =>
+                      players.map((player, index) => {
+                        if (index !== i) return player;
+
+                        return {
+                          ...player,
+                          color,
+                        };
+                      }),
+                    );
                   }}
                   options={colors}
                 />
               </View>
-
-              <View>
-                {players.map((player, i) => (
-                  <View key={i} style={styles.playerInputs}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setPlayers((players) =>
-                          players.filter((player, index) => index !== i),
-                        );
-                      }}>
-                      <Icon name="delete" type="ionicons" size={30} />
-                    </TouchableOpacity>
-
-                    <TextInput
-                      style={styles.input}
-                      value={player.name}
-                      onChangeText={(name) =>
-                        setPlayers((players) =>
-                          players.map((player, index) => {
-                            if (index !== i) return player;
-
-                            return {
-                              ...player,
-                              name,
-                            };
-                          }),
-                        )
-                      }
-                      onSubmitEditing={() => {
-                        addPlayer();
-                      }}
-                    />
-                    <ColorPicker
-                      selected={player.color}
-                      onChange={(color) => {
-                        setPlayers((players) =>
-                          players.map((player, index) => {
-                            if (index !== i) return player;
-
-                            return {
-                              ...player,
-                              color,
-                            };
-                          }),
-                        );
-                      }}
-                      options={colors}
-                    />
-                  </View>
-                ))}
-              </View>
-            </View>
+            ))}
+          </View>
+          <View style={styles.switchContainer}>
+            <Switch
+              trackColor={{false: '#767577', true: 'lightgrey'}}
+              thumbColor={settings.soundEnabled ? 'green' : '#f4f3f4'}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={toggleSwitch}
+              value={settings.soundEnabled}
+            />
+            <Text>{settings.soundEnabled ? 'SOUND ON' : 'SOUND OFF'}</Text>
           </View>
         </ScrollView>
       </LinearGradient>
@@ -132,17 +150,9 @@ export default function Sidebar() {
 }
 
 const styles = StyleSheet.create({
-  scrollView: {},
-  appContainer: {
-    flex: 1,
-    alignItems: 'center',
-  },
   linearGradient: {
     flex: 1,
-  },
-  inputsContainer: {
-    justifyContent: 'center',
-    minWidth: 270,
+    alignItems: 'center',
   },
   playerInputs: {
     flexDirection: 'row',
@@ -151,9 +161,9 @@ const styles = StyleSheet.create({
     margin: 20,
   },
   input: {
-    fontSize: 20,
-    height: 40,
-    width: 150,
+    fontSize: 30,
+    height: 50,
+    width: 200,
     borderBottomColor: 'grey',
     borderBottomWidth: 1,
     padding: 5,
@@ -163,5 +173,9 @@ const styles = StyleSheet.create({
   deleteButton: {
     fontSize: 30,
     height: 40,
+  },
+  switchContainer: {
+    alignItems: 'center',
+    padding: 20,
   },
 });
